@@ -6,7 +6,7 @@ This project, developed for the NextLeap AI Bootcamp, is a **Facts-Only Mutual F
 * **Product Context:** Groww
 * **AMC Focus:** HDFC Mutual Fund
 * **Schemes Covered:**
-    1.  **HDFC large cap fund**
+    1.  HDFC large cap fund
     2.  HDFC Flexi Cap Fund
     3.  HDFC ELSS Tax Saver Fund
 * **Data Source:** Strictly official public pages from AMC, SEBI, and AMFI.
@@ -28,8 +28,8 @@ This project, developed for the NextLeap AI Bootcamp, is a **Facts-Only Mutual F
 ## 🚀 How to Use the Bot
 
 1.  **Prerequisite:** You need to have the Telegram app installed on your device.
-2.  **Access:** Go to the bot link: **`https://t.me/NextLeap_Atman_bot`**
-3.  **Start:** Click the **'Start'** button in the chat window.
+2.  **Access:** Go to the bot link: [@NextLeap_Atman_bot](https://t.me/NextLeap_Atman_bot)
+3.  **Start:** Click the **'/Start'** button in the chat window.
 4.  **Query:** Ask a factual question about one of the three schemes (e.g., "What is the exit load for the Flexi Cap Fund?" or "What is the benchmark for the HDFC large cap fund?").
 
 ### ⚠️ Disclaimer
