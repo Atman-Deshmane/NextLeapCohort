@@ -9,7 +9,7 @@ This project, developed for the NextLeap AI Bootcamp, is a **Facts-Only Mutual F
     1.  HDFC large cap fund
     2.  HDFC Flexi Cap Fund
     3.  HDFC ELSS Tax Saver Fund
-* **Data Source:** Strictly official public pages from AMC, SEBI, and AMFI.
+* **Data Source:** Strictly official public pages from HDFC Funds; all [PDFs and source links here](https://drive.google.com/drive/folders/1AbdcuHTz0xzyC-cIU404dVrs2VuwJFNl?usp=sharing).
 * **Goal:** Answer factual queries (Expense Ratio, Exit Load, Lock-in, etc.) with a single, clear citation link.
 
 ---
