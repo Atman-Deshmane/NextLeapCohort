@@ -1,62 +1,36 @@
-# Modern Login Page
+# 🤖 NextLeap MF Assistant (RAG Chatbot)
 
-A beautiful, modern login page with glassmorphism design and Google authentication.
+This project, developed for the NextLeap AI Bootcamp, is a **Facts-Only Mutual Fund Assistant**. Its sole purpose is to retrieve verified, factual data about selected HDFC Mutual Fund schemes and refuse any query asking for investment advice or opinion.
 
-## Features
+## 🎯 Project Scope & Constraints
+* **Product Context:** Groww
+* **AMC Focus:** HDFC Mutual Fund
+* **Schemes Covered:**
+    1.  **HDFC large cap fund**
+    2.  HDFC Flexi Cap Fund
+    3.  HDFC ELSS Tax Saver Fund
+* **Data Source:** Strictly official public pages from AMC, SEBI, and AMFI.
+* **Goal:** Answer factual queries (Expense Ratio, Exit Load, Lock-in, etc.) with a single, clear citation link.
 
-- ✨ Glassmorphism UI design with animated background
-- 🔐 Email and password login form
-- 👁️ Password visibility toggle
-- 🔵 Google Sign-In integration
-- 📱 Responsive design
-- 🎨 Beautiful blue gradient theme
+---
 
-## Files
+## ⚙️ Technology & Architecture
 
-- `index.html` - Main HTML structure
-- `styles.css` - Styling with glassmorphism effects
-- `script.js` - JavaScript for interactivity and Google login
-- `GOOGLE_LOGIN_SETUP.md` - Detailed guide for setting up Google authentication
+| Component | Tool / Service | Reasoning |
+| :--- | :--- | :--- |
+| **Orchestration** | **n8n** | Chosen for its visual workflow editor, allowing for easy logic mapping, debugging, and transparent flow execution. |
+| **Vector DB / RAG** | **Pinecone.io (Free Tier)** | Handles the heavy lifting of vector embedding, semantic search, and document retrieval, freeing the LLM from knowledge constraints. |
+| **Large Language Model** | **Google Gemini** | Used for the final Retrieval-Augmented Generation (RAG) step: synthesizing the retrieved facts into a concise, cited answer. |
+| **Frontend** | **Telegram** | Chosen to avoid the hassle and time-sink of building a separate web UI. Provides a simple, accessible chat interface. |
 
-## Quick Start
+---
 
-1. Open `index.html` in a web browser
-2. For local development, you can use a simple HTTP server:
-   ```bash
-   # Python 3
-   python -m http.server 8000
-   
-   # Node.js (with http-server)
-   npx http-server -p 8000
-   ```
-3. Navigate to `http://localhost:8000`
+## 🚀 How to Use the Bot
 
-## Google Login Setup
+1.  **Prerequisite:** You need to have the Telegram app installed on your device.
+2.  **Access:** Go to the bot link: **`https://t.me/NextLeap_Atman_bot`**
+3.  **Start:** Click the **'Start'** button in the chat window.
+4.  **Query:** Ask a factual question about one of the three schemes (e.g., "What is the exit load for the Flexi Cap Fund?" or "What is the benchmark for the HDFC large cap fund?").
 
-To enable Google login functionality, follow the detailed instructions in [GOOGLE_LOGIN_SETUP.md](./GOOGLE_LOGIN_SETUP.md).
-
-**Quick Summary:**
-1. Create a project in Google Cloud Console
-2. Enable Google Identity Services API
-3. Create OAuth 2.0 credentials
-4. Update `YOUR_GOOGLE_CLIENT_ID` in `script.js`
-5. Set up backend authentication endpoint
-
-## Customization
-
-- **Logo**: Update the "Your logo" text in `index.html`
-- **Colors**: Modify the gradient colors in `styles.css`
-- **Background Shapes**: Adjust the `.shape` classes in `styles.css`
-- **Form Fields**: Add or remove fields in the `login-form` section
-
-## Browser Support
-
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-
-## License
-
-Free to use and modify for your projects.
-
+### ⚠️ Disclaimer
+The bot will strictly refuse any investment advice (e.g., "Should I buy/sell?").

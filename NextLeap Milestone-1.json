@@ -1,0 +1,652 @@
+{
+  "name": "NextLeap",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Telegram Trigger').item.json.message.text }}",
+        "options": {
+          "systemMessage": "You are the \"Groww Facts-Only MF Assistant\" for HDFC Mutual Fund schemes. Your goal is to answer user questions strictly using the provided Context Documents from the Pinecone tool.\n\n---\n### YOUR RULES (NON-NEGOTIABLE):\n\n1.  **FACTS ONLY:** Answer ONLY factual queries regarding:\n    * Expense Ratio, Exit Load, Minimum SIP/Lump sum.\n    * Lock-in periods (specifically for ELSS).\n    * Riskometer levels and Benchmarks.\n    * Official processes for downloading statements/tax documents.\n\n2.  **STRICT REFUSAL (No Advice):**\n    * If the user asks for investment advice, opinions, comparisons, or future performance predictions (e.g., \"Should I buy?\", \"Is this good?\", \"Will it go up?\"), you must **REFUSE**.\n    * **Refusal Template:** \"I am a facts-only assistant and cannot provide investment advice or opinions. Please consult a financial advisor. You can review the official scheme details here: [Insert General Link from Context].\"\n\n3.  **CITATION IS MANDATORY:**\n    * Every single answer must end with clear citation links. You must use the Table tool to get the citation link corresponding to the file name.\n\n\n4.  **FORMATTING:**\n    * Keep answers extremely concise (**maximum 3 sentences**).\n    * Do not use markdown bolding/formatting for the body text, keep it plain and readable.\n\n5.  **Handling Missing Info:**\n    * If the answer is not explicitly present in the Context Documents, state: \"I could not find this specific fact in the official documents available to me.\" Do not make up numbers.\n\n---\n### CONTEXT DOCUMENTS:\nProvided in the Pinecone tool.\n\n### SOURCE LINKS:\nProvided in the Table tool.\n\n\nWhen answering the user’s question, always cite your sources as far as: what document you got it from, what page it was from, and what section. Strictly get the source links from the Table tool provided to you. Do not use any other links."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        496,
+        -16
+      ],
+      "id": "28d2f258-95f7-47ee-89bf-1dc2399f84a3",
+      "name": "AI Agent",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        480,
+        368
+      ],
+      "id": "b5ad6ff0-6c2b-4faa-9afd-1fbd08ad02e7",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "GEMINI_API_KEY_PLACEHOLDER",
+          "name": "Gemini-API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -624,
+        -208
+      ],
+      "id": "4153aa7c-ee5e-494d-854b-1e6ad854604d",
+      "name": "When chat message received",
+      "webhookId": "CHAT_TRIGGER_WEBHOOK_ID"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.payload.type }}",
+                    "rightValue": "question",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "0f39bcb6-8609-488e-8504-669f4b22c129"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "question"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c3b27b3f-5772-4843-b926-8e2ab569ba72",
+                    "leftValue": "={{ $json.payload.type }}",
+                    "rightValue": "command",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "command"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "73401188-3ccc-48ba-bd84-a1696781d4d5",
+                    "leftValue": "={{ $json.payload.type }}",
+                    "rightValue": "start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "start"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -96,
+        -16
+      ],
+      "id": "5f93a740-bedb-4e95-ab63-d1e7e6dc3202",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -384,
+        0
+      ],
+      "id": "72de6260-6b88-44fb-b559-30263db2153b",
+      "name": "Telegram Trigger",
+      "webhookId": "TELEGRAM_TRIGGER_WEBHOOK_ID",
+      "credentials": {
+        "telegramApi": {
+          "id": "TELEGRAM_BOT_TOKEN_PLACEHOLDER",
+          "name": "Telegram-Bot Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const msg = { payload: {} };\nconst input = $input.first();\n\nif (input.json?.callback_query?.data) {\n  // Handle inline commands (callback queries)\n  msg.payload.type = input.json.callback_query.data;\n\n} else if (input.json?.message?.text) {\n  const messageText = input.json.message.text;\n  if (messageText.startsWith('/')) {\n    // Handle slash‑commands\n    msg.payload.type = messageText.slice(1).split(' ')[0];\n  } else {\n    // Plain‑text is a question\n    msg.payload.type = 'question';\n  }\n\n} else if (\n  input.json?.message?.photo ||\n  input.json?.message?.document ||\n  input.json?.message?.video ||\n  input.json?.message?.audio ||\n  input.json?.message?.sticker\n) {\n  // Any media (images, docs, etc.) treat as question\n  msg.payload.type = 'question';\n\n} else {\n  // Everything else\n  msg.payload.type = 'unknown';\n}\n\nreturn msg;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        0
+      ],
+      "id": "c27c3bf2-adae-4cfa-9ae6-fe31fb2de359",
+      "name": "Categorise the trigger output"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=`👋 <b>Welcome to the Groww Facts-Only MF Assistant!</b> 🤖💰\n\nI'm a specialized chatbot built for the <b>NextLeap AI Bootcamp</b> by <b>@Atman25</b>. 🚀\n\nI provide <b>verified facts</b> 🧱 for these HDFC Mutual Fund schemes:\n• <b>HDFC Nifty 50 Index Fund</b> 📈\n• <b>HDFC Flexi Cap Fund</b> 🧭\n• <b>HDFC ELSS Tax Saver Fund</b> 🛡️\n\n—\n\n<b>🔎 Ask me about:</b>\n<i>Expense Ratio, Exit Load, Minimum SIP, Lock-in (ELSS), Riskometer, Benchmark, and Statements.</i>\n\n<b>Example Questions:</b>\n1. What is the <b>Exit Load</b> for HDFC Flexi Cap Fund?\n2. What is the <b>Minimum SIP</b> for HDFC ELSS Tax Saver Fund?\n3. How do I <b>download</b> my Capital Gains Statement?\n\n<pre>⚠️ Quick Disclaimer: I am strictly a facts-provider and cannot offer any investment advice. Verified sources only! 🤝</pre>`",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        16,
+        160
+      ],
+      "id": "dec7ab01-1716-4d1c-893e-8457ef3a0ddc",
+      "name": "Send a text message",
+      "webhookId": "TELEGRAM_SEND_MESSAGE_WEBHOOK_ID",
+      "credentials": {
+        "telegramApi": {
+          "id": "TELEGRAM_BOT_TOKEN_PLACEHOLDER",
+          "name": "Telegram-Bot Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $('Parsing Code').item.json.htmlText }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1712,
+        304
+      ],
+      "id": "56c35785-5af5-49f9-beb8-ce45f2c87447",
+      "name": "Send a text message1",
+      "webhookId": "TELEGRAM_RESPONSE_WEBHOOK_ID",
+      "credentials": {
+        "telegramApi": {
+          "id": "TELEGRAM_BOT_TOKEN_PLACEHOLDER",
+          "name": "Telegram-Bot Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "TELEGRAM_CREATOR_CHAT_ID",
+        "text": "={{ $('Telegram Trigger').item.json.message.from.first_name }} started the bot\nUsername {{ $('Telegram Trigger').item.json.message.from.username }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "MarkdownV2"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        272
+      ],
+      "id": "0c81604a-901a-4f8d-815e-8ee2506db0c2",
+      "name": "Notify Creator",
+      "webhookId": "TELEGRAM_NOTIFY_CREATOR_WEBHOOK_ID",
+      "credentials": {
+        "telegramApi": {
+          "id": "TELEGRAM_BOT_TOKEN_PLACEHOLDER",
+          "name": "Telegram-Bot Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        640
+      ],
+      "id": "a538d0ce-b1af-44b6-902c-0c54897e5f75",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the raw text from the input\nlet text = $input.first().json.output || '';\n\n// Escape for Telegram HTML parse mode\nfunction escapeForTelegramHtml(str) {\n  return str\n    .replace(/&/g, '&amp;')  // must be first\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;');\n}\n\nconst htmlText = escapeForTelegramHtml(text);\n\n// Return only the htmlText field\nreturn [\n  {\n    json: { htmlText }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        16
+      ],
+      "id": "ee3088d4-2ab0-4836-91bd-d0e2a095ffcf",
+      "name": "Parsing Code"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.htmlText.length }}",
+                    "rightValue": 4000,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gt"
+                    },
+                    "id": "995007ab-3ba5-42cd-a733-6b7f5f2b4200"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Long"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "11f95c28-f65f-4b93-9e44-a46ffd35a31a",
+                    "leftValue": "={{ $json.htmlText.length }}",
+                    "rightValue": 4000,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lt"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Short"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1104,
+        16
+      ],
+      "id": "3581593d-7684-4483-9664-2ed2fc0a97ee",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "html",
+        "binaryPropertyName": "=data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1312,
+        -80
+      ],
+      "id": "02cd952b-c0d0-41ed-8d2a-8ebc5f5befb7",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "operation": "sendDocument",
+        "chatId": "={{ $('Telegram Trigger').first().json.message.chat.id }}",
+        "binaryData": true,
+        "additionalFields": {
+          "caption": "Sending a file since text was too long 👆🏻",
+          "fileName": "Answer.html"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1520,
+        -80
+      ],
+      "id": "388dce1f-4a92-43c6-9084-21efd6971e3f",
+      "name": "Send a document",
+      "webhookId": "TELEGRAM_DOCUMENT_WEBHOOK_ID",
+      "credentials": {
+        "telegramApi": {
+          "id": "TELEGRAM_BOT_TOKEN_PLACEHOLDER",
+          "name": "Telegram-Bot Token"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        672,
+        192
+      ],
+      "id": "9baf4fc7-8d8e-4dc3-9b55-9c418929b338",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "This Data table is useful to match the Document names and the source Links to be provided.",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "M0UhpMAaYimORIkp",
+          "mode": "list",
+          "cachedResultName": "NextLeap Milestone 1",
+          "cachedResultUrl": "/projects/i3S29OmLzvQqqVql/datatables/M0UhpMAaYimORIkp"
+        },
+        "returnAll": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All', ``, 'boolean') }}"
+      },
+      "type": "n8n-nodes-base.dataTableTool",
+      "typeVersion": 1,
+      "position": [
+        832,
+        320
+      ],
+      "id": "79f961e7-7509-4892-b937-c370c3412e0b",
+      "name": "Table"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use this tool to talk to your knowledge base. ",
+        "method": "POST",
+        "url": "https://prod-1-data.ke.pinecone.io/assistant/chat/nextleap-milestone-1",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "pineconeApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $fromAI(\"searchQuery\") }}\"\n    }\n  ],\n  \"stream\": false,\n  \"model\": \"gpt-4o\",\n  \"include_highlights\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        688,
+        448
+      ],
+      "id": "f967a953-d6fd-4ed2-918f-f81f8cf99bb3",
+      "name": "Pinecone",
+      "credentials": {
+        "pineconeApi": {
+          "id": "PINECONE_API_KEY_PLACEHOLDER",
+          "name": "Pinecone-API Key"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Telegram Trigger": [
+      {
+        "json": {
+          "update_id": "TELEGRAM_UPDATE_ID_PLACEHOLDER",
+          "message": {
+            "message_id": "TELEGRAM_MESSAGE_ID_PLACEHOLDER",
+            "from": {
+              "id": "TELEGRAM_USER_ID_PLACEHOLDER",
+              "is_bot": false,
+              "first_name": "FIRST_NAME_PLACEHOLDER",
+              "username": "USERNAME_PLACEHOLDER",
+              "language_code": "en"
+            },
+            "chat": {
+              "id": "TELEGRAM_CHAT_ID_PLACEHOLDER",
+              "first_name": "FIRST_NAME_PLACEHOLDER",
+              "username": "USERNAME_PLACEHOLDER",
+              "type": "private"
+            },
+            "date": "TELEGRAM_MESSAGE_DATE_PLACEHOLDER",
+            "text": "USER_MESSAGE_PLACEHOLDER"
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        []
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Categorise the trigger output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Categorise the trigger output": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parsing Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "Notify Creator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsing Code": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Send a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        []
+      ]
+    },
+    "Table": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a6e44c8e-5ae3-4035-be86-59e6a6c8acbc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "39216bddf60f1857eba28a2fecb4364bdfdded14ed3c0c1d9901bdad23ae2965"
+  },
+  "id": "RptJmPMPNJuwMxEy",
+  "tags": []
+}
